@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Admin Dashboard</title>
+        <link rel="stylesheet" href="/css/style.css" />
+    </head>
+
+    <body>
+        <%- include('../partials/navbar') %>
+
+        <div class="dashboard-container">
+            <h2 style="text-align: center">Welcome, <%= user.name %>!</h2>
+
+            <div class="main-action-cards">
+                <a href="/admin/academics" class="action-card">
+                    <h3>📚 View Academics</h3>
+                    <p>
+                        Browse, update, and manage departments, subjects, and
+                        resources.
+                    </p>
+                </a>
+
+                <a href="/admin/students" class="action-card">
+                    <h3>👤 Manage Students</h3>
+                    <p>View, add, or delete student accounts.</p>
+                </a>
+
+                <a href="/admin/faculty" class="action-card">
+                    <h3>🧑‍🏫 Manage Faculty</h3>
+                    <p>View, add, or delete faculty (admin) accounts.</p>
+                </a>
+            </div>
+        </div>
+    </body>
+</html>

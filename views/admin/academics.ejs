@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Academic Structure Management</title>
+
+        <!-- Font Awesome -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        />
+
+        <!-- Your existing CSS -->
+        <link rel="stylesheet" href="/css/style.css" />
+
+        <style>
+            /* Override for academic structure page - matching dashboard theme */
+            :root {
+                --ac-primary: #66a6ff;
+                --ac-secondary: #89f7fe;
+                --ac-gradient: linear-gradient(135deg, #66a6ff, #89f7fe);
+                --ac-card-bg: #fff;
+                --ac-hover-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                --ac-text-primary: #333;
+                --ac-text-secondary: #555;
+                --ac-border: #dee2e6;
+            }
+
+            /* Dashboard-style container */
+            .ac-dashboard-container {
+                background: rgba(255, 255, 255, 0.98);
+                width: 100%;
+                max-width: 1200px;
+                padding: 40px 35px;
+                margin: 100px auto 40px;
+                border-radius: 20px;
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+                animation: fadeIn 0.8s ease-in-out;
+                backdrop-filter: blur(10px);
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Header matching dashboard style */
+            .ac-header {
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+                border-bottom: 2px solid transparent;
+                border-image: var(--ac-gradient) 1;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .ac-header h2 {
+                margin: 0;
+                color: var(--ac-text-primary);
+                font-size: 2em;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .ac-header h2 i {
+                background: var(--ac-gradient);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            /* Primary button matching dashboard */
+            .ac-button {
+                padding: 13px 24px;
+                border: none;
+                border-radius: 12px;
+                background: var(--ac-gradient);
+                color: white;
+                font-weight: 600;
+                font-size: 1em;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 12px rgba(102, 166, 255, 0.3);
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .ac-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(102, 166, 255, 0.4);
+            }
+
+            .ac-button:active {
+                transform: translateY(0);
+            }
+
+            /* Cards matching dashboard card style */
+            .ac-card {
+                background: white;
+                border-radius: 16px;
+                margin: 16px 0;
+                padding: 24px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                border: 1px solid rgba(102, 166, 255, 0.1);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .ac-card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: var(--ac-gradient);
+            }
+
+            .ac-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                border-color: rgba(102, 166, 255, 0.3);
+            }
+
+            /* Department cards */
+            .ac-department-card {
+                background: white;
+            }
+
+            /* Year cards */
+            .ac-year-card {
+                background: #f9f9f9;
+                margin: 12px 0;
+            }
+
+            /* Subject cards */
+            .ac-subject-card {
+                background: #fafafa;
+                margin: 10px 0;
+            }
+
+            /* Toggle button area */
+            .ac-toggle-btn {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .ac-toggle-btn h3,
+            .ac-toggle-btn h4,
+            .ac-toggle-btn h5 {
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-weight: 600;
+                color: var(--ac-text-primary);
+                flex: 1;
+            }
+
+            .ac-toggle-btn h3 i,
+            .ac-toggle-btn h4 i,
+            .ac-toggle-btn h5 i {
+                color: var(--ac-primary);
+            }
+
+            /* Arrow indicator */
+            .ac-toggle-btn h3::before,
+            .ac-toggle-btn h4::before,
+            .ac-toggle-btn h5::before {
+                content: "▶";
+                display: inline-block;
+                transform-origin: center;
+                transition: transform 0.3s ease;
+                color: var(--ac-primary);
+                font-size: 0.85em;
+                width: 20px;
+            }
+
+            .ac-expanded-toggle::before {
+                transform: rotate(90deg);
+            }
+
+            /* Action buttons within cards */
+            .ac-action-buttons {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .ac-toggle-btn button {
+                padding: 10px 18px;
+                border: none;
+                border-radius: 10px;
+                background: var(--ac-gradient);
+                color: white;
+                font-weight: 500;
+                font-size: 0.9em;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+                box-shadow: 0 4px 12px rgba(102, 166, 255, 0.3);
+            }
+
+            .ac-toggle-btn button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(102, 166, 255, 0.4);
+            }
+
+            .ac-toggle-btn button:active {
+                transform: translateY(0);
+            }
+
+            /* Delete button styling */
+            .ac-delete-btn {
+                background: linear-gradient(
+                    135deg,
+                    #ff6b6b,
+                    #ff8e8e
+                ) !important;
+                box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3) !important;
+            }
+
+            .ac-delete-btn:hover {
+                box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4) !important;
+            }
+
+            /* Nested content areas */
+            .ac-sub-card {
+                margin-top: 16px;
+                padding-left: 28px;
+                border-left: 3px solid rgba(102, 166, 255, 0.2);
+                overflow: hidden;
+                max-height: 10000px;
+                transition: max-height 0.4s ease, opacity 0.3s ease,
+                    padding 0.3s ease;
+                opacity: 1;
+            }
+
+            .ac-collapsed {
+                max-height: 0 !important;
+                opacity: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                margin: 0;
+                border-left: none;
+            }
+
+            /* Resources list */
+            .ac-sub-card ul {
+                list-style: none;
+                padding: 0;
+                margin: 12px 0 0;
+            }
+
+            .ac-sub-card li {
+                margin: 8px 0;
+                padding: 12px 16px;
+                background: rgba(102, 166, 255, 0.05);
+                border-radius: 10px;
+                border: 1px solid rgba(102, 166, 255, 0.1);
+                transition: all 0.3s ease;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .ac-sub-card li:hover {
+                background: rgba(102, 166, 255, 0.1);
+                border-color: rgba(102, 166, 255, 0.2);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .ac-sub-card a {
+                text-decoration: none;
+                color: var(--ac-primary);
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: color 0.2s ease;
+                flex: 1;
+            }
+
+            .ac-sub-card a:hover {
+                color: var(--ac-secondary);
+            }
+
+            .ac-sub-card a i {
+                font-size: 1.1em;
+            }
+
+            /* Small delete button for resources */
+            .ac-resource-delete {
+                padding: 6px 12px;
+                border: none;
+                border-radius: 8px;
+                background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+                color: white;
+                font-weight: 500;
+                font-size: 0.85em;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+                white-space: nowrap;
+            }
+
+            .ac-resource-delete:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+            }
+
+            .ac-resource-delete i {
+                font-size: 0.9em;
+            }
+
+            /* No data state */
+            .ac-no-data {
+                color: var(--ac-text-secondary);
+                font-style: italic;
+                margin: 16px 0;
+                text-align: center;
+                padding: 30px;
+                background: #f9f9f9;
+                border-radius: 12px;
+                border: 2px dashed #dee2e6;
+            }
+
+            .ac-no-data i {
+                font-size: 2em;
+                color: #ccc;
+                margin-bottom: 10px;
+            }
+
+            /* Modal matching dashboard style */
+            .ac-modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 1100;
+                animation: modalFadeIn 0.2s ease;
+            }
+
+            @keyframes modalFadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            .ac-modal[aria-hidden="false"] {
+                display: flex;
+            }
+
+            .ac-modal-content {
+                width: 92%;
+                max-width: 480px;
+                background: white;
+                border-radius: 20px;
+                padding: 40px 35px;
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+                animation: modalSlideUp 0.3s ease;
+            }
+
+            @keyframes modalSlideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .ac-modal-content h3 {
+                margin: 0 0 25px;
+                color: var(--ac-text-primary);
+                font-size: 1.8em;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .ac-modal-content h3 i {
+                background: var(--ac-gradient);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            /* Form inputs matching dashboard */
+            .ac-modal-content input[type="text"],
+            .ac-modal-content input[type="number"],
+            .ac-modal-content select {
+                width: 100%;
+                padding: 13px 16px;
+                margin: 10px 0;
+                border-radius: 12px;
+                border: 2px solid #e2e8f0;
+                box-sizing: border-box;
+                font-size: 15px;
+                transition: all 0.3s ease;
+                font-family: inherit;
+                color: var(--ac-text-primary);
+                background: white;
+            }
+
+            .ac-modal-content input:focus,
+            .ac-modal-content select:focus {
+                outline: none;
+                border-color: var(--ac-primary);
+                box-shadow: 0 0 0 4px rgba(102, 166, 255, 0.1);
+            }
+
+            /* Modal actions */
+            .ac-modal-actions {
+                display: flex;
+                gap: 12px;
+                justify-content: flex-end;
+                margin-top: 25px;
+            }
+
+            .ac-submit {
+                padding: 13px 24px;
+                border-radius: 12px;
+                border: none;
+                background: var(--ac-gradient);
+                color: white;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 12px rgba(102, 166, 255, 0.3);
+                font-size: 1em;
+            }
+
+            .ac-submit:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(102, 166, 255, 0.4);
+            }
+
+            .ac-submit:active {
+                transform: translateY(0);
+            }
+
+            .ac-close-btn {
+                padding: 13px 24px;
+                border-radius: 12px;
+                border: 2px solid #e2e8f0;
+                background: white;
+                color: var(--ac-text-secondary);
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-size: 1em;
+            }
+
+            .ac-close-btn:hover {
+                border-color: #cbd5e0;
+                background: #f7fafc;
+            }
+
+            /* Responsive design */
+            @media (max-width: 768px) {
+                .ac-dashboard-container {
+                    margin: 80px auto 30px;
+                    padding: 28px 20px;
+                }
+
+                .ac-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .ac-header h2 {
+                    font-size: 1.6em;
+                }
+
+                .ac-button {
+                    width: 100%;
+                    justify-content: center;
+                }
+
+                .ac-card {
+                    padding: 18px;
+                }
+
+                .ac-toggle-btn {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 12px;
+                }
+
+                .ac-toggle-btn button {
+                    width: 100%;
+                    justify-content: center;
+                }
+
+                .ac-action-buttons {
+                    width: 100%;
+                    flex-direction: column;
+                }
+
+                .ac-action-buttons button {
+                    width: 100%;
+                }
+
+                .ac-sub-card {
+                    padding-left: 16px;
+                }
+
+                .ac-modal-content {
+                    padding: 30px 25px;
+                }
+
+                .ac-modal-content h3 {
+                    font-size: 1.4em;
+                }
+
+                .ac-modal-actions {
+                    flex-direction: column;
+                }
+
+                .ac-modal-actions button {
+                    width: 100%;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .ac-dashboard-container {
+                    margin: 70px auto 20px;
+                    padding: 25px 18px;
+                }
+
+                .ac-header h2 {
+                    font-size: 1.4em;
+                }
+
+                .ac-modal-content {
+                    padding: 25px 20px;
+                }
+            }
+            /* Custom file upload styling */
+            .ac-file-label {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                padding: 12px 20px;
+                border-radius: 12px;
+                background: var(--ac-gradient);
+                color: white;
+                font-weight: 600;
+                font-size: 1em;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(102, 166, 255, 0.3);
+                transition: all 0.3s ease;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+
+            .ac-file-label:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(102, 166, 255, 0.4);
+            }
+
+            .ac-file-label i {
+                font-size: 1.1em;
+            }
+
+            .ac-file-name {
+                display: block;
+                margin-top: 8px;
+                font-size: 0.9em;
+                color: var(--ac-text-secondary);
+                text-align: center;
+                word-break: break-all;
+            }
+        </style>
+    </head>
+
+    <body>
+        <%- include('../partials/navbar') %>
+
+        <div class="ac-dashboard-container" id="acDashboard">
+            <div class="ac-header">
+                <h2>
+                    <i class="fas fa-building-columns"></i>
+                    Academic Structure Management
+                </h2>
+                <button
+                    class="ac-button"
+                    onclick="openModal('acAddDepartmentModal')"
+                >
+                    <i class="fas fa-plus"></i> Add Department
+                </button>
+            </div>
+
+            <% if (departments && departments.length > 0) { %> <%
+            departments.forEach(dep => { %>
+            <div class="ac-card ac-department-card">
+                <div class="ac-toggle-btn" onclick="toggleExpand(this)">
+                    <h3>
+                        <i class="fas fa-graduation-cap"></i> <%= dep.name %>
+                    </h3>
+                    <div class="ac-action-buttons">
+                        <button
+                            onclick="event.stopPropagation(); openAddYearModal('<%= dep._id %>')"
+                        >
+                            <i class="fas fa-plus"></i> Add Year
+                        </button>
+                        <button
+                            class="ac-delete-btn"
+                            onclick="event.stopPropagation(); deleteDepartment('<%= dep._id %>', '<%= dep.name %>')"
+                        >
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ac-sub-card ac-collapsed">
+                    <% if (dep.years && dep.years.length > 0) { %> <%
+                    dep.years.forEach(y => { %>
+                    <div class="ac-card ac-year-card">
+                        <div class="ac-toggle-btn" onclick="toggleExpand(this)">
+                            <h4>
+                                <i class="fas fa-calendar-alt"></i> Year <%=
+                                y.year %>
+                            </h4>
+                            <div class="ac-action-buttons">
+                                <button
+                                    onclick="event.stopPropagation(); openAddSubjectModal('<%= dep._id %>', '<%= y._id %>')"
+                                >
+                                    <i class="fas fa-plus"></i> Add Subject
+                                </button>
+                                <button
+                                    class="ac-delete-btn"
+                                    onclick="event.stopPropagation(); deleteYear('<%= dep._id %>', '<%= y._id %>', '<%= y.year %>')"
+                                >
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="ac-sub-card ac-collapsed">
+                            <% if (y.subjects && y.subjects.length > 0) { %> <%
+                            y.subjects.forEach(sub => { %>
+                            <div class="ac-card ac-subject-card">
+                                <div
+                                    class="ac-toggle-btn"
+                                    onclick="toggleExpand(this)"
+                                >
+                                    <h5>
+                                        <i class="fas fa-book"></i> <%= sub.name
+                                        %>
+                                    </h5>
+                                    <div class="ac-action-buttons">
+                                        <button
+                                            onclick="event.stopPropagation(); openAddResourceModal('<%= dep._id %>', '<%= y._id %>', '<%= sub._id %>')"
+                                        >
+                                            <i class="fas fa-plus"></i> Add
+                                            Resource
+                                        </button>
+                                        <button
+                                            class="ac-delete-btn"
+                                            onclick="event.stopPropagation(); deleteSubject('<%= dep._id %>', '<%= y._id %>', '<%= sub._id %>', '<%= sub.name %>')"
+                                        >
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="ac-sub-card ac-collapsed">
+                                    <% if (sub.resources && sub.resources.length
+                                    > 0) { %>
+                                    <ul>
+                                        <% sub.resources.forEach(r => { %>
+                                        <li>
+                                            <a
+                                                href="<%= r.link %>"
+                                                target="_blank"
+                                            >
+                                                <i class="fas fa-link"></i>
+                                                <%= r.description %> (<%= r.type
+                                                %>)
+                                            </a>
+                                            <button
+                                                class="ac-resource-delete"
+                                                onclick="deleteResource('<%= dep._id %>', '<%= y._id %>', '<%= sub._id %>', '<%= r._id %>', '<%= r.description %>')"
+                                            >
+                                                <i class="fas fa-trash"></i>
+                                                Delete
+                                            </button>
+                                        </li>
+                                        <% }) %>
+                                    </ul>
+                                    <% } else { %>
+                                    <p class="ac-no-data">
+                                        <i class="fas fa-inbox"></i><br />
+                                        No resources added yet.
+                                    </p>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <% }) %> <% } else { %>
+                            <p class="ac-no-data">
+                                <i class="fas fa-inbox"></i><br />
+                                No subjects added yet.
+                            </p>
+                            <% } %>
+                        </div>
+                    </div>
+                    <% }) %> <% } else { %>
+                    <p class="ac-no-data">
+                        <i class="fas fa-inbox"></i><br />
+                        No years added yet.
+                    </p>
+                    <% } %>
+                </div>
+            </div>
+            <% }) %> <% } else { %>
+            <p class="ac-no-data">
+                <i class="fas fa-inbox"></i><br />
+                No departments found. Add one to start building your academic
+                structure.
+            </p>
+            <% } %>
+        </div>
+
+        <!-- MODALS -->
+        <div
+            id="acAddDepartmentModal"
+            class="ac-modal"
+            aria-hidden="true"
+            onclick="modalBackdropClick(event)"
+        >
+            <div
+                class="ac-modal-content"
+                role="dialog"
+                aria-modal="true"
+                onclick="event.stopPropagation()"
+            >
+                <h3><i class="fas fa-graduation-cap"></i> Add Department</h3>
+                <form method="POST" action="/admin/academics/addDepartment">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Department Name"
+                        required
+                    />
+                    <div class="ac-modal-actions">
+                        <button
+                            type="button"
+                            class="ac-close-btn"
+                            onclick="closeModal('acAddDepartmentModal')"
+                        >
+                            Cancel
+                        </button>
+                        <button type="submit" class="ac-submit">
+                            <i class="fas fa-check"></i> Add Department
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div
+            id="acAddYearModal"
+            class="ac-modal"
+            aria-hidden="true"
+            onclick="modalBackdropClick(event)"
+        >
+            <div
+                class="ac-modal-content"
+                role="dialog"
+                aria-modal="true"
+                onclick="event.stopPropagation()"
+            >
+                <h3><i class="fas fa-calendar-alt"></i> Add Year</h3>
+                <form method="POST" id="acAddYearForm">
+                    <input
+                        type="number"
+                        name="year"
+                        placeholder="Enter year (1–4)"
+                        min="1"
+                        max="4"
+                        required
+                    />
+                    <div class="ac-modal-actions">
+                        <button
+                            type="button"
+                            class="ac-close-btn"
+                            onclick="closeModal('acAddYearModal')"
+                        >
+                            Cancel
+                        </button>
+                        <button type="submit" class="ac-submit">
+                            <i class="fas fa-check"></i> Add Year
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div
+            id="acAddSubjectModal"
+            class="ac-modal"
+            aria-hidden="true"
+            onclick="modalBackdropClick(event)"
+        >
+            <div
+                class="ac-modal-content"
+                role="dialog"
+                aria-modal="true"
+                onclick="event.stopPropagation()"
+            >
+                <h3><i class="fas fa-book"></i> Add Subject</h3>
+                <form method="POST" id="acAddSubjectForm">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Subject Name"
+                        required
+                    />
+                    <div class="ac-modal-actions">
+                        <button
+                            type="button"
+                            class="ac-close-btn"
+                            onclick="closeModal('acAddSubjectModal')"
+                        >
+                            Cancel
+                        </button>
+                        <button type="submit" class="ac-submit">
+                            <i class="fas fa-check"></i> Add Subject
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div
+            id="acAddResourceModal"
+            class="ac-modal"
+            aria-hidden="true"
+            onclick="modalBackdropClick(event)"
+        >
+            <div
+                class="ac-modal-content"
+                role="dialog"
+                aria-modal="true"
+                onclick="event.stopPropagation()"
+            >
+                <h3><i class="fas fa-link"></i> Add Resource</h3>
+                <form method="POST" id="acAddResourceForm">
+                    <input
+                        type="text"
+                        name="description"
+                        placeholder="Resource Description"
+                        required
+                    />
+
+                    <!-- Added file upload field -->
+                    <label for="fileInput" class="ac-file-label">
+                        <i class="fas fa-paperclip"></i> Choose File
+                    </label>
+                    <input
+                        type="file"
+                        id="fileInput"
+                        name="file"
+                        accept=".pdf,.png,.jpg,.jpeg,.mp4,.docx"
+                        hidden
+                    />
+                    <span id="fileName" class="ac-file-name"
+                        >No file selected</span
+                    >
+
+                    <button
+                        type="button"
+                        class="ac-button"
+                        style="
+                            width: 100%;
+                            justify-content: center;
+                            margin-bottom: 10px;
+                        "
+                        onclick="uploadToDrive()"
+                    >
+                        <i class="fas fa-cloud-upload-alt"></i> Upload to Google
+                        Drive
+                    </button>
+
+                    <!-- Auto-filled after upload -->
+                    <input
+                        type="text"
+                        name="link"
+                        placeholder="Resource Link (auto-filled if uploaded)"
+                        required
+                    />
+
+                    <select name="type" required>
+                        <option value="">Select Resource Type</option>
+                        <option value="pdf">📄 PDF</option>
+                        <option value="video">🎥 Video</option>
+                        <option value="image">🖼️ Image</option>
+                        <option value="link">🔗 Link</option>
+                    </select>
+
+                    <div class="ac-modal-actions">
+                        <button
+                            type="button"
+                            class="ac-close-btn"
+                            onclick="closeModal('acAddResourceModal')"
+                        >
+                            Cancel
+                        </button>
+                        <button type="submit" class="ac-submit">
+                            <i class="fas fa-check"></i> Add Resource
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- SortableJS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const fileInput = document.getElementById("fileInput");
+                const fileNameDisplay = document.getElementById("fileName");
+                if (fileInput && fileNameDisplay) {
+                    fileInput.addEventListener("change", function () {
+                        fileNameDisplay.textContent =
+                            this.files.length > 0
+                                ? this.files[0].name
+                                : "No file selected";
+                    });
+                }
+            });
+
+            // Expand/collapse with smooth transitions
+            function toggleExpand(element) {
+                const next = element.nextElementSibling;
+                if (!next) return;
+
+                const header = element.querySelector("h3, h4, h5");
+
+                if (next.classList.contains("ac-collapsed")) {
+                    next.classList.remove("ac-collapsed");
+                    const full = next.scrollHeight;
+                    next.style.maxHeight = full + "px";
+                    next.style.opacity = "1";
+                    if (header) header.classList.add("ac-expanded-toggle");
+                    setTimeout(() => {
+                        next.style.maxHeight = "10000px";
+                    }, 400);
+                } else {
+                    const cur = next.scrollHeight;
+                    next.style.maxHeight = cur + "px";
+                    next.offsetHeight;
+                    next.style.maxHeight = "0px";
+                    next.style.opacity = "0";
+                    if (header) header.classList.remove("ac-expanded-toggle");
+                    next.classList.add("ac-collapsed");
+                }
+            }
+
+            function openModal(id) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.setAttribute("aria-hidden", "false");
+                el.style.display = "flex";
+                document.documentElement.style.overflow = "hidden";
+                document.body.style.overflow = "hidden";
+            }
+
+            function closeModal(id) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.setAttribute("aria-hidden", "true");
+                el.style.display = "none";
+                document.documentElement.style.overflow = "";
+                document.body.style.overflow = "";
+            }
+
+            function modalBackdropClick(evt) {
+                if (
+                    evt &&
+                    evt.target &&
+                    evt.target.classList &&
+                    evt.target.classList.contains("ac-modal")
+                ) {
+                    const id = evt.target.id;
+                    closeModal(id);
+                }
+            }
+
+            function openAddYearModal(depId) {
+                const form = document.getElementById("acAddYearForm");
+                if (!form) return;
+                form.action = `/admin/academics/${depId}/addYear`;
+                openModal("acAddYearModal");
+            }
+
+            function openAddSubjectModal(depId, yearId) {
+                const form = document.getElementById("acAddSubjectForm");
+                if (!form) return;
+                form.action = `/admin/academics/${depId}/years/${yearId}/addSubject`;
+                openModal("acAddSubjectModal");
+            }
+
+            function openAddResourceModal(depId, yearId, subId) {
+                const form = document.getElementById("acAddResourceForm");
+                if (!form) return;
+                form.action = `/admin/academics/${depId}/years/${yearId}/subjects/${subId}/addResource`;
+                openModal("acAddResourceModal");
+            }
+
+            // Initialize
+            document.addEventListener("DOMContentLoaded", function () {
+                const container = document.querySelector(
+                    ".ac-dashboard-container"
+                );
+                if (container) {
+                    new Sortable(container, {
+                        group: "nested",
+                        animation: 200,
+                        handle: ".ac-card",
+                        fallbackOnBody: true,
+                        swapThreshold: 0.65,
+                    });
+                }
+
+                document.querySelectorAll(".ac-sub-card").forEach((sub) => {
+                    if (sub.classList.contains("ac-collapsed")) {
+                        sub.style.maxHeight = "0px";
+                        sub.style.opacity = "0";
+                    }
+                });
+
+                // Remove ac-expanded-toggle class from all headers initially
+                document
+                    .querySelectorAll(
+                        ".ac-toggle-btn h3, .ac-toggle-btn h4, .ac-toggle-btn h5"
+                    )
+                    .forEach((header) => {
+                        header.classList.remove("ac-expanded-toggle");
+                    });
+            });
+
+            // Delete functions with confirmation
+            function deleteDepartment(depId, depName) {
+                if (
+                    confirm(
+                        `Are you sure you want to delete the department "${depName}"? This will delete all years, subjects, and resources within it.`
+                    )
+                ) {
+                    fetch(`/admin/academics/${depId}`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(
+                                    "Error deleting department: " +
+                                        (data.message || "Unknown error")
+                                );
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error:", error);
+                            alert(
+                                "Error deleting department. Please try again."
+                            );
+                        });
+                }
+            }
+
+            function deleteYear(depId, yearId, yearNum) {
+                if (
+                    confirm(
+                        `Are you sure you want to delete Year ${yearNum}? This will delete all subjects and resources within it.`
+                    )
+                ) {
+                    fetch(`/admin/academics/${depId}/years/${yearId}`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(
+                                    "Error deleting year: " +
+                                        (data.message || "Unknown error")
+                                );
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error:", error);
+                            alert("Error deleting year. Please try again.");
+                        });
+                }
+            }
+
+            function deleteSubject(depId, yearId, subjectId, subjectName) {
+                if (
+                    confirm(
+                        `Are you sure you want to delete the subject "${subjectName}"? This will delete all resources within it.`
+                    )
+                ) {
+                    fetch(
+                        `/admin/academics/${depId}/years/${yearId}/subjects/${subjectId}`,
+                        {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        }
+                    )
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(
+                                    "Error deleting subject: " +
+                                        (data.message || "Unknown error")
+                                );
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error:", error);
+                            alert("Error deleting subject. Please try again.");
+                        });
+                }
+            }
+
+            function deleteResource(
+                depId,
+                yearId,
+                subjectId,
+                resourceId,
+                resourceDesc
+            ) {
+                if (
+                    confirm(
+                        `Are you sure you want to delete the resource "${resourceDesc}"?`
+                    )
+                ) {
+                    fetch(
+                        `/admin/academics/${depId}/years/${yearId}/subjects/${subjectId}/resources/${resourceId}`,
+                        {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        }
+                    )
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(
+                                    "Error deleting resource: " +
+                                        (data.message || "Unknown error")
+                                );
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error:", error);
+                            alert("Error deleting resource. Please try again.");
+                        });
+                }
+            }
+
+            async function uploadToDrive() {
+                const file = document.getElementById("fileInput").files[0];
+                if (!file) return alert("Select a file first");
+                const formData = new FormData();
+                formData.append("file", file);
+                const res = await fetch("/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.querySelector('input[name="link"]').value =
+                        data.webViewLink;
+                    alert("Uploaded! Link added automatically.");
+                } else {
+                    alert("Upload failed: " + (data.error || "unknown"));
+                }
+            }
+        </script>
+    </body>
+</html>

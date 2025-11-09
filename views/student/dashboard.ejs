@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Academic Structure</title>
+
+        <!-- Font Awesome -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        />
+
+        <link rel="stylesheet" href="/css/style.css" />
+
+        <style>
+            /* Keep only styles needed for viewing */
+            :root {
+                --ac-primary: #66a6ff;
+                --ac-secondary: #89f7fe;
+                --ac-gradient: linear-gradient(135deg, #66a6ff, #89f7fe);
+                --ac-card-bg: #fff;
+                --ac-text-primary: #333;
+                --ac-border: #dee2e6;
+            }
+
+            .ac-dashboard-container {
+                background: white;
+                width: 100%;
+                max-width: 1200px;
+                padding: 40px 35px;
+                margin: 100px auto 40px;
+                border-radius: 20px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .ac-header {
+                margin-bottom: 30px;
+                border-bottom: 2px solid transparent;
+                border-image: var(--ac-gradient) 1;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .ac-header h2 {
+                font-size: 2em;
+                font-weight: 700;
+                color: var(--ac-text-primary);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .ac-card {
+                background: white;
+                border-radius: 16px;
+                margin: 16px 0;
+                padding: 24px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                border: 1px solid rgba(102, 166, 255, 0.1);
+                transition: all 0.3s ease;
+            }
+
+            .ac-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            }
+
+            .ac-toggle-btn {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .ac-toggle-btn h3,
+            .ac-toggle-btn h4,
+            .ac-toggle-btn h5 {
+                margin: 0;
+                font-weight: 600;
+                color: var(--ac-text-primary);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .ac-toggle-btn h3::before,
+            .ac-toggle-btn h4::before,
+            .ac-toggle-btn h5::before {
+                content: "▶";
+                display: inline-block;
+                transition: transform 0.3s ease;
+                color: var(--ac-primary);
+                font-size: 0.9em;
+            }
+
+            .ac-expanded-toggle::before {
+                transform: rotate(90deg);
+            }
+
+            .ac-sub-card {
+                margin-top: 16px;
+                padding-left: 24px;
+                border-left: 3px solid rgba(102, 166, 255, 0.2);
+                overflow: hidden;
+                max-height: 10000px;
+                transition: max-height 0.4s ease, opacity 0.3s ease;
+                opacity: 1;
+            }
+
+            .ac-collapsed {
+                max-height: 0 !important;
+                opacity: 0;
+                padding: 0;
+                border: none;
+            }
+
+            ul {
+                list-style: none;
+                padding: 0;
+                margin: 12px 0 0;
+            }
+
+            li {
+                margin: 8px 0;
+                padding: 12px 16px;
+                background: rgba(102, 166, 255, 0.05);
+                border-radius: 10px;
+                border: 1px solid rgba(102, 166, 255, 0.1);
+                transition: all 0.3s ease;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+            }
+
+            li:hover {
+                background: rgba(102, 166, 255, 0.1);
+            }
+
+            a {
+                text-decoration: none;
+                color: var(--ac-primary);
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .ac-no-data {
+                text-align: center;
+                color: gray;
+                font-style: italic;
+                padding: 30px;
+                border: 2px dashed #dee2e6;
+                border-radius: 12px;
+                background: #f9f9f9;
+            }
+        </style>
+    </head>
+
+    <body>
+        <%- include('../partials/navbar') %>
+
+        <div class="ac-dashboard-container" id="acDashboard">
+            <h2 style="text-align: center">Welcome, <%= user.name %>!</h2>
+            <div class="ac-header">
+                <h2>
+                    <i class="fas fa-building-columns"></i> Academic Structure
+                </h2>
+            </div>
+
+            <% if (departments && departments.length > 0) { %> <%
+            departments.forEach(dep => { %>
+            <div class="ac-card ac-department-card">
+                <div class="ac-toggle-btn" onclick="toggleExpand(this)">
+                    <h3>
+                        <i class="fas fa-graduation-cap"></i> <%= dep.name %>
+                    </h3>
+                </div>
+
+                <div class="ac-sub-card ac-collapsed">
+                    <% if (dep.years && dep.years.length > 0) { %> <%
+                    dep.years.forEach(y => { %>
+                    <div class="ac-card ac-year-card">
+                        <div class="ac-toggle-btn" onclick="toggleExpand(this)">
+                            <h4>
+                                <i class="fas fa-calendar-alt"></i> Year <%=
+                                y.year %>
+                            </h4>
+                        </div>
+
+                        <div class="ac-sub-card ac-collapsed">
+                            <% if (y.subjects && y.subjects.length > 0) { %> <%
+                            y.subjects.forEach(sub => { %>
+                            <div class="ac-card ac-subject-card">
+                                <div
+                                    class="ac-toggle-btn"
+                                    onclick="toggleExpand(this)"
+                                >
+                                    <h5>
+                                        <i class="fas fa-book"></i> <%= sub.name
+                                        %>
+                                    </h5>
+                                </div>
+
+                                <div class="ac-sub-card ac-collapsed">
+                                    <% if (sub.resources && sub.resources.length
+                                    > 0) { %>
+                                    <ul>
+                                        <% sub.resources.forEach(r => { %>
+                                        <li>
+                                            <a
+                                                href="<%= r.link %>"
+                                                target="_blank"
+                                            >
+                                                <i class="fas fa-link"></i> <%=
+                                                r.description %> (<%= r.type %>)
+                                            </a>
+                                        </li>
+                                        <% }) %>
+                                    </ul>
+                                    <% } else { %>
+                                    <p class="ac-no-data">
+                                        <i class="fas fa-inbox"></i><br />No
+                                        resources available.
+                                    </p>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <% }) %> <% } else { %>
+                            <p class="ac-no-data">
+                                <i class="fas fa-inbox"></i><br />No subjects
+                                available.
+                            </p>
+                            <% } %>
+                        </div>
+                    </div>
+                    <% }) %> <% } else { %>
+                    <p class="ac-no-data">
+                        <i class="fas fa-inbox"></i><br />No years available.
+                    </p>
+                    <% } %>
+                </div>
+            </div>
+            <% }) %> <% } else { %>
+            <p class="ac-no-data">
+                <i class="fas fa-inbox"></i><br />No departments found.
+            </p>
+            <% } %>
+        </div>
+
+        <script>
+            function toggleExpand(element) {
+                const next = element.nextElementSibling;
+                if (!next) return;
+                const header = element.querySelector("h3, h4, h5");
+
+                if (next.classList.contains("ac-collapsed")) {
+                    next.classList.remove("ac-collapsed");
+                    const full = next.scrollHeight;
+                    next.style.maxHeight = full + "px";
+                    next.style.opacity = "1";
+                    if (header) header.classList.add("ac-expanded-toggle");
+                    setTimeout(() => (next.style.maxHeight = "10000px"), 400);
+                } else {
+                    const cur = next.scrollHeight;
+                    next.style.maxHeight = cur + "px";
+                    next.offsetHeight;
+                    next.style.maxHeight = "0px";
+                    next.style.opacity = "0";
+                    if (header) header.classList.remove("ac-expanded-toggle");
+                    next.classList.add("ac-collapsed");
+                }
+            }
+        </script>
+    </body>
+</html>

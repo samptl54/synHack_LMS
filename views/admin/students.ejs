@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Manage Students</title>
+        <link rel="stylesheet" href="/css/style.css" />
+        <style>
+            /* Flyout style (same theme as login) */
+            .flyout {
+                display: none;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #dc2626; /* red by default */
+                color: #fff;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                font-weight: 500;
+                z-index: 9999;
+                animation: slideIn 0.4s ease;
+            }
+            .flyout.success {
+                background: #16a34a; /* green */
+            }
+            .flyout.warning {
+                background: #eab308; /* yellow */
+                color: #000;
+            }
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-15px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <%- include('../partials/navbar') %>
+
+        <div class="flyout" id="flyout"></div>
+
+        <div class="dashboard-container">
+            <h2>👤 Manage Students</h2>
+
+            <form id="addStudentForm" class="faculty-form">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Full Name"
+                        required
+                    />
+                </div>
+                <div class="input-group">
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                    />
+                </div>
+                <div class="input-group">
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        required
+                    />
+                </div>
+                <button type="submit" class="btn">➕ Add Student</button>
+            </form>
+
+            <hr class="divider" />
+
+            <h3 class="faculty-heading">All Students</h3>
+
+            <div class="table-container">
+                <table class="faculty-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% students.forEach(student => { %>
+                        <tr>
+                            <td><%= student.name %></td>
+                            <td><%= student.email %></td>
+                            <td>
+                                <button
+                                    class="delete-btn"
+                                    onclick="deleteUser('<%= student.email %>')"
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            const form = document.getElementById("addStudentForm");
+            const flyout = document.getElementById("flyout");
+
+            function showFlyout(message, type = "") {
+                flyout.textContent = message;
+                flyout.className = `flyout ${type}`;
+                flyout.style.display = "block";
+                setTimeout(() => {
+                    flyout.style.display = "none";
+                }, 2500);
+            }
+
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                data.role = "student";
+
+                try {
+                    const response = await fetch("/admin/addUser", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        showFlyout("✅ Student added successfully!", "success");
+                        form.reset();
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showFlyout("⚠️ " + result.message, "warning");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showFlyout("❌ Error adding student", "");
+                }
+            });
+
+            async function deleteUser(email) {
+                try {
+                    const response = await fetch("/admin/deleteUser", {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email }),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        showFlyout("✅ User deleted successfully!", "success");
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showFlyout("⚠️ " + result.message, "warning");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showFlyout("❌ Error deleting user", "");
+                }
+            }
+        </script>
+    </body>
+</html>

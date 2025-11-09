@@ -1,0 +1,55 @@
+<nav class="navbar">
+    <div class="logo">
+        <!-- <i class="fas fa-graduation-cap"></i> -->
+        <span>LMS</span>
+    </div>
+    <div class="nav-links">
+        <a href="/" class="nav-link">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <!-- <a href="#" class="nav-link">
+            <i class="fas fa-book-open"></i>
+            <span>Courses</span>
+        </a>
+        <a href="#" class="nav-link">
+            <i class="fas fa-folder-open"></i>
+            <span>Resources</span>
+        </a> -->
+        <a href="/logout" class="nav-link logout">
+            <!-- <i class="fas fa-sign-out-alt"></i> -->
+            <span>Logout</span>
+        </a>
+    </div>
+    <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</nav>
+
+<script>
+    // Mobile menu toggle
+    document.addEventListener("DOMContentLoaded", function () {
+        const hamburger = document.querySelector(".hamburger");
+        const navLinks = document.querySelector(".nav-links");
+
+        if (hamburger) {
+            hamburger.addEventListener("click", function () {
+                hamburger.classList.toggle("active");
+                navLinks.classList.toggle("active");
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener("click", function (e) {
+                if (
+                    !hamburger.contains(e.target) &&
+                    !navLinks.contains(e.target)
+                ) {
+                    hamburger.classList.remove("active");
+                    navLinks.classList.remove("active");
+                }
+            });
+        }
+    });
+</script>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>LMS Portal Login</title>
+        <link rel="stylesheet" href="/css/style.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        />
+        <style>
+            /* --- Flyout Popup --- */
+            .flyout {
+                display: none;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #dc2626;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                font-weight: 500;
+                z-index: 999;
+                animation: slideIn 0.4s ease;
+            }
+            .flyout.success {
+                background: #16a34a;
+            }
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-15px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="flyout" id="flyout"></div>
+
+        <div class="login-wrapper">
+            <!-- Left side: VNIT image -->
+            <div class="login-image-container">
+                <img
+                    src="/images/vnit-nagpur.jpg"
+                    alt="VNIT Nagpur Campus"
+                    class="login-image"
+                />
+                <div class="image-overlay">
+                    <h1>Visvesvaraya National Institute of Technology</h1>
+                    <p>Nagpur, Maharashtra, India</p>
+                </div>
+            </div>
+
+            <!-- Right side: Login form -->
+            <div class="login-container">
+                <div class="login-header">
+                    <div class="logo-circle">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h2>LMS Portal Login</h2>
+                    <p class="subtitle">Faculty & Student Access</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="input-group icon-input">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Email Address"
+                            required
+                        />
+                    </div>
+                    <div class="input-group icon-input">
+                        <i class="fa-solid fa-lock"></i>
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            required
+                        />
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                </form>
+
+                <div class="extra-links">
+                    <a href="#">Forgot Password?</a>
+                    <a href="/register">Create Account</a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const form = document.getElementById("loginForm");
+            const flyout = document.getElementById("flyout");
+
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                const body = Object.fromEntries(formData.entries());
+
+                const res = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body),
+                });
+
+                const data = await res.json();
+
+                flyout.textContent =
+                    data.message ||
+                    (data.success ? "Login successful!" : "Error");
+                flyout.className = `flyout ${data.success ? "success" : ""}`;
+                flyout.style.display = "block";
+
+                setTimeout(() => {
+                    flyout.style.display = "none";
+                }, 2500);
+
+                if (data.success) {
+                    setTimeout(() => {
+                        if (data.role === "admin")
+                            window.location.href = "/admin/dashboard";
+                        else window.location.href = "/student/dashboard";
+                    }, 1000);
+                }
+            });
+        </script>
+    </body>
+</html>
